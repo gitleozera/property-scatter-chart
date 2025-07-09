@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .chart-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h1 class="title">Property Performance Analysis (2025) - All 35 Properties</h1>
+        <div id="scatterChart" style="width:100%;height:700px;"></div>
+    </div>
+
+    <script>
+        // Complete property data for all 35 properties
+        const properties = [
+            {name: "Casa de Luz", rec_exp: 0.2225625987, excep_exp: 0.09502654342, net_income: 111943.55},
+            {name: "Puros Dieces", rec_exp: 0.3095319456, excep_exp: 0.06340479855, net_income: 105317.18},
+            {name: "Villa Encantada", rec_exp: 0.6599143251, excep_exp: 0.0, net_income: 4741.57},
+            {name: "Leon", rec_exp: 0.3662002914, excep_exp: 0.1591938868, net_income: 6277.05},
+            {name: "Costa Blanca", rec_exp: 0.3488705895, excep_exp: 0.0455399722, net_income: 141974.47},
+            {name: "Kailua", rec_exp: 0.5507887136, excep_exp: 0.1334282377, net_income: 9162.16},
+            {name: "Oceana", rec_exp: 0.2933762068, excep_exp: 0.1722297171, net_income: 53685.55},
+            {name: "Bonita Beach", rec_exp: 0.3082045802, excep_exp: 0.1583315502, net_income: 35811.92},
+            {name: "Uana", rec_exp: 0.7295683676, excep_exp: 0.3835593065, net_income: -6557.33},
+            {name: "Motmot", rec_exp: 0.4722465441, excep_exp: 0.1367287336, net_income: 23344.43},
+            {name: "Hamacas", rec_exp: 0.5218841379, excep_exp: 0.245773637, net_income: -77273.63},
+            {name: "Descanza", rec_exp: 0.3764995819, excep_exp: 0.1756648853, net_income: 48415.56},
+            {name: "Blanca", rec_exp: 0.2957390462, excep_exp: 0.1423368228, net_income: 42837.03},
+            {name: "Puesta Del Sol", rec_exp: 0.2968004804, excep_exp: 0.1741079665, net_income: 26124.77},
+            {name: "Alegria", rec_exp: 0.2207333304, excep_exp: 0.07065770196, net_income: 81594.67},
+            {name: "Suerte", rec_exp: 0.4816995874, excep_exp: 0.2396951407, net_income: 20045.14},
+            {name: "Soul House", rec_exp: 0.2179967823, excep_exp: 0.1138567712, net_income: 92450.9},
+            {name: "Serena", rec_exp: 0.1540833942, excep_exp: 0.0296787915, net_income: 93679.75},
+            {name: "Quebracho", rec_exp: 0.2472434718, excep_exp: 0.2931531008, net_income: 20288.63},
+            {name: "Ventana", rec_exp: 0.3933648419, excep_exp: 0.0885158891, net_income: 39798.95},
+            {name: "Breeze", rec_exp: 0.4905325071, excep_exp: 0.2334540894, net_income: 9518.89},
+            {name: "Casa De Sophie", rec_exp: 0.1202785022, excep_exp: 0.008433764352, net_income: 79608.6},
+            {name: "Florecer", rec_exp: 0.1419200358, excep_exp: 0.1419200358, net_income: 23459.64},
+            {name: "Savanna", rec_exp: 0.6365536827, excep_exp: 0.1968833925, net_income: 722.62},
+            {name: "Villa Royal", rec_exp: 0.1572649025, excep_exp: 0.01577137991, net_income: 103083.86},
+            {name: "Lomas Del Mar", rec_exp: 0.4156494064, excep_exp: 0.09715519736, net_income: 45543.43},
+            {name: "Calico", rec_exp: 0.4168701588, excep_exp: 0.2913760472, net_income: 2360.41},
+            {name: "Casa de Los Monos", rec_exp: 0.3917445589, excep_exp: 0.2263854564, net_income: 15859.83},
+            {name: "Moderna", rec_exp: 0.5608561382, excep_exp: 0.1360842593, net_income: 36073.23},
+            {name: "Howler", rec_exp: 0.8154461045, excep_exp: 0.3120020917, net_income: -9440.23},
+            {name: "Xanadu", rec_exp: 0.1149397902, excep_exp: 0.02849463008, net_income: 13342.96},
+            {name: "Guayacan", rec_exp: 0.6828948724, excep_exp: 0.01043752278, net_income: 1824.55},
+            {name: "Matapalo 701", rec_exp: 0.4725412884, excep_exp: 0.3931694485, net_income: 1914.01},
+            {name: "Bahau", rec_exp: 1.017283261, excep_exp: 0.9543440604, net_income: -14894.92},
+            {name: "Colibri", rec_exp: 0.2740715018, excep_exp: 0.3234312368, net_income: 56408.76}
+        ];
+
+        // Create the scatter chart with uniform bubble sizes
+        const trace = {
+            x: properties.map(p => p.rec_exp * 100), // Convert to percentage
+            y: properties.map(p => p.excep_exp * 100), // Convert to percentage
+            mode: 'markers',
+            marker: {
+                size: 12, // Uniform size for all bubbles
+                color: properties.map(p => p.net_income),
+                colorscale: [
+                    [0, '#d73027'],    // Red for low/negative values
+                    [0.1, '#f46d43'],  // Orange-red
+                    [0.3, '#fdae61'],  // Orange
+                    [0.5, '#fee08b'],  // Yellow
+                    [0.7, '#d9ef8b'],  // Light green
+                    [0.9, '#a6d96a'],  // Green
+                    [1, '#66bd63']     // Dark green for high values
+                ],
+                showscale: true,
+                colorbar: {
+                    title: 'Net Income ($)',
+                    titlefont: {size: 14},
+                    tickfont: {size: 12}
+                },
+                line: {
+                    color: 'black',
+                    width: 1
+                },
+                opacity: 0.8
+            },
+            text: properties.map(p => 
+                `<b>${p.name}</b><br>` +
+                `Recurring Exp: ${(p.rec_exp * 100).toFixed(1)}%<br>` +
+                `Exceptional Exp: ${(p.excep_exp * 100).toFixed(1)}%<br>` +
+                `Net Income: $${p.net_income.toLocaleString()}`
+            ),
+            hovertemplate: '%{text}<extra></extra>',
+            type: 'scatter'
+        };
+
+        const layout = {
+            title: {
+                text: 'Hover over any point to see property details<br><sub>Color indicates Net Income Level: Red = Low/Negative, Green = High | 35 Properties Total</sub>',
+                font: {size: 16}
+            },
+            xaxis: {
+                title: {
+                    text: 'Recurring Expense as % of Rents',
+                    font: {size: 14}
+                },
+                ticksuffix: '%',
+                tickfont: {size: 12},
+                gridcolor: 'lightgray',
+                gridwidth: 1
+            },
+            yaxis: {
+                title: {
+                    text: 'Exceptional Expense as % of Rents',
+                    font: {size: 14}
+                },
+                ticksuffix: '%',
+                tickfont: {size: 12},
+                gridcolor: 'lightgray',
+                gridwidth: 1
+            },
+            plot_bgcolor: 'white',
+            paper_bgcolor: 'white',
+            hovermode: 'closest',
+            margin: {
+                l: 80,
+                r: 80,
+                t: 120,
+                b: 80
+            }
+        };
+
+        const config = {
+            responsive: true,
+            displayModeBar: true,
+            modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+            displaylogo: false
+        };
+
+        Plotly.newPlot('scatterChart', [trace], layout, config);
+    </script>
+</body>
+</html>
